@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+################################################################################
+#
+# Author:   Gleb E. Goncharov <inbox@gongled.ru>
+# Version:  1.0
+# License:  GPLv3
+#
+###########################################################u#####################
+
+OS_DISTRIBUTION=`python -c \
+  "import platform; print(platform.linux_distribution()[0].lower())"`
+
+OS_MAJOR_RELEASE=`python -c \
+  "import platform; print(platform.linux_distribution()[1].split('.')[0])"`
+
+PROJECT_REPO="https://github.com/gongled/vpn-bootstrap.git"
+PROJECT_PATH="/var/tmp/vpn-bootstrap"
+
+################################################################################
+
+NORMAL=0
+BOLD=1
+UNDERLINE=4
+RED=31
+GREEN=32
+BROWN=33
+BLUE=34
+MAGENTO=35
+CYAN=36
+GREY=37
+
+################################################################################
+
+show() {
+    if [[ -n "$2" && -z "$no_colors" ]] ; then
+        echo -e "\e[${2}m${1}\e[0m"
+    else
+        echo -e "$1"
+    fi
+}
+
+is_root() {
+    if [ "$(id -u)" != "0" ]; then
+        show "Error: this script must be run as root" $RED
+        exit 1
+    fi
+}
+
+################################################################################
+
+main() {
+
+    is_root
+
+    show "\n**** Installation *************************************************************\n" $NORMAL
+
+    show "Resolving dependencies..." $GREY
+
+    if  [ "$OS_DISTRIBUTION" == "ubuntu" -o "$OS_DISTRIBUTION" == "debian" ]; then
+        apt-get -y update &> /dev/null
+        apt-get -y install git python-pip python-dev &> /dev/null
+    elif [ "$OS_DISTRIBUTION" == "centos" -o "$OS_DISTRIBUTION" == "centos linux" ]; then
+        rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-$OS_MAJOR_RELEASE.noarch.rpm &> /dev/null
+        yum install -y gcc python-pip python-devel git &> /dev/null
+    else
+        show "\nError: your OS is not supported yet" $RED
+        exit 1
+    fi
+
+    pip install ansible &> /dev/null
+
+    ############################################################################
+
+    show "Unpacking project..." $GREY
+
+    [[ -x "$PROJECT_PATH" ]] || mkdir -p "$PROJECT_PATH"
+
+    pushd "$PROJECT_PATH" &> /dev/null
+    git clone "$PROJECT_REPO" "$PROJECT_PATH" &> /dev/null
+    popd &> /dev/null
+
+    show "\n*******************************************************************************\n" $NORMAL
+
+    show "Project has been installed into '$PROJECT_PATH'\n" $GREEN
+    show "Please specify custom settings in 'config.json', switch to the directory," $NORMAL
+    show "and then launch following command (be patient, it may take a long time):\n" $NORMAL
+    show "ansible-playbook install.yml -c local -e @config.json" $CYAN
+    echo
+}
+
+main $@
