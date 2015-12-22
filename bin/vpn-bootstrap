@@ -56,16 +56,16 @@ main() {
 
     ############################################################################
 
-    rm -rf "$PROJECT_PATH/" &> /dev/null 
+    rm -rf "$PROJECT_PATH/" &> /dev/null
 
-    curl -sL http://shell.gongled.me/vpn-preconf | bash -s
+    curl -sL https://raw.githubusercontent.com/gongled/vpn-bootstrap/master/bin/vpn-preconf | bash -s
 
     ############################################################################
 
     show "*******************************************************************************\n" $NORMAL
 
     show "Generate credentials..." $GREY
- 
+
     PROJECT_AUTO_PASSWORD=`mktemp -u XXXXXXXXXXXXXXXX`
     PROJECT_AUTO_IPSECPSK=`openssl rand -hex 16`
     PROJECT_AUTO_REMOTEIP=`curl -sL http://ip.gongled.me`
