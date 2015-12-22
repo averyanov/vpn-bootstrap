@@ -1,0 +1,4 @@
+- name: create accounts
+  template:
+    src=etc/ppp/chap-secrets.j2
+    dest=/etc/ppp/chap-secrets

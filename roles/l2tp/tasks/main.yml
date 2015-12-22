@@ -1,0 +1,48 @@
+################################################################################
+
+- name: install xl2tpd (Ubuntu/Debian)
+  apt:
+    name={{ item }}
+    state=latest
+    update_cache=yes
+  with_items:
+    - xl2tpd
+  when: ansible_os_family == "Debian"
+  tags:
+    - l2tp
+
+- name: install xl2tpd (CentOS/RHEL)
+  yum:
+    name={{ item }}
+    state=latest
+  with_items:
+    - xl2tpd
+  when: ansible_os_family == "RedHat"
+  tags:
+    - l2tp
+
+################################################################################
+
+- name: load options.xl2tpd
+  template:
+    src=etc/ppp/options.xl2tpd.j2
+    dest=/etc/ppp/options.xl2tpd
+    owner=root
+    group=root
+    mode=0644
+  notify: restart xl2tpd
+  tags:
+    - l2tp
+
+- name: load xl2tpd.conf
+  template:
+    src=etc/xl2tpd/xl2tpd.conf.j2
+    dest=/etc/xl2tpd/xl2tpd.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: restart xl2tpd
+  tags:
+    - l2tp
+
+################################################################################

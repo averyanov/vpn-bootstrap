@@ -1,0 +1,17 @@
+[global]
+ipsec saref = yes
+saref refinfo = 30
+
+;debug avp = yes
+;debug network = yes
+;debug state = yes
+;debug tunnel = yes
+
+[lns default]
+ip range = {{ settings['l2tp']['ip_range'] }}
+local ip = {{ settings['l2tp']['ip_local'] }}
+refuse pap = yes
+require authentication = yes
+;ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes

@@ -1,0 +1,2 @@
+iptables:
+  config: "/etc/network/iptables"

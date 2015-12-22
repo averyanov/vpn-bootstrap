@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "access": {
+      "%USERNAME%": "%PASSWORD%"
+    },
+    "network": {
+      "remote_addr": "%REMOTEIP%"
+    },
+    "ipsec": {
+      "psk": "%IPSECPSK%"
+    },
+    "l2tp": {
+      "network": "172.16.0.0/24",
+      "ip_local": "172.16.0.1",
+      "ip_range": "172.16.0.2-172.16.0.127",
+      "dns": ["8.8.8.8", "8.8.4.4"]
+    }
+  }
+}

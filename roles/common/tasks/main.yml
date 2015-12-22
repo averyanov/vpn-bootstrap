@@ -1,0 +1,68 @@
+################################################################################
+
+- name: fetch OS variables
+  include_vars: "{{ ansible_os_family|lower() }}.yml"
+
+################################################################################
+
+- name: install requirements (Ubuntu/Debian)
+  apt:
+    name={{ item }}
+    state=latest
+    update_cache=yes
+  with_items:
+    - tmux
+    - vim
+  when: ansible_os_family == "Debian"
+  tags:
+    - common
+
+- name: install requirements (CentOS/RHEL)
+  yum:
+    name={{ item }}
+    state=latest
+  with_items:
+    - tmux
+    - vim-enhanced
+  when: ansible_os_family == "RedHat"
+  tags:
+    - common
+
+################################################################################
+
+- name: load sysctl.conf
+  template:
+    src=sysctl.conf.j2
+    dest=/etc/sysctl.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: apply sysctl
+  tags:
+    - common
+
+################################################################################
+
+- name: load rules
+  template:
+    src=iptables.j2
+    dest={{ iptables.config }}
+    owner=root
+    group=root
+    mode=0640
+  notify: apply boot
+  tags:
+    - common
+
+- name: load after-boot script
+  template:
+    src=rc.local.j2
+    dest=/etc/rc.local
+    owner=root
+    group=root
+    mode=0644
+  notify: apply boot
+  tags:
+    - common
+
+################################################################################

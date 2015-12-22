@@ -1,0 +1,5 @@
+- name: apply boot
+  shell: /bin/bash /etc/rc.local
+
+- name: apply sysctl
+  shell: sysctl -p

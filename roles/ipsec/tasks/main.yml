@@ -1,0 +1,48 @@
+################################################################################
+
+- name: install openswan (Ubuntu/Debian)
+  apt:
+    name={{ item }}
+    state=latest
+    update_cache=yes
+  with_items:
+    - openswan
+  when: ansible_os_family == "Debian"
+  tags:
+    - ipsec
+
+- name: install openswan (CentOS/RHEL)
+  yum:
+    name={{ item }}
+    state=latest
+  with_items:
+    - openswan
+  when: ansible_os_family == "RedHat"
+  tags:
+    - ipsec
+
+################################################################################
+
+- name: load ipsec.conf
+  template:
+    src=etc/ipsec.conf.j2
+    dest=/etc/ipsec.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: restart ipsec
+  tags:
+    - ipsec
+
+- name: load ipsec.secrets
+  template:
+    src=etc/ipsec.secrets.j2
+    dest=/etc/ipsec.secrets
+    owner=root
+    group=root
+    mode=0644
+  notify: restart ipsec
+  tags:
+    - ipsec
+
+################################################################################

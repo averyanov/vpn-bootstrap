@@ -1,0 +1,10 @@
+---
+
+- name: Install VPN
+  sudo: true
+  hosts: all
+  roles:
+    - common
+    - access
+    - ipsec
+    - l2tp
