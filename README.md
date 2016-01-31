@@ -1,5 +1,7 @@
 ## About
 
+![vpn-bootstrap](https://raw.githubusercontent.com/gongled/vpn-bootstrap/master/vpn-bootstrap.png)
+
 vpn-bootstrap helps you setup IPSec/L2TP server.
 
 ## Quick install
