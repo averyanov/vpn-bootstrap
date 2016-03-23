@@ -8,10 +8,10 @@ Ansible roles which helps you setup IPSec/L2TP VPN on [Digital Ocean](https://di
 
 Work in progress. Stay tuned!
 
-- [x] IPSec via OpenSwan
+- [x] IPSec (OpenSwan)
   - [x] PSK authentication
   - [ ] Certificate-based authentication
-- [ ] StrongSwan
+- [ ] IPSec (StrongSwan)
   - [ ] PSK authentication
   - [ ] Certificate-based authentication
 - [x] PAM authentication (/etc/passwd)
