@@ -2,11 +2,11 @@
 
 [![Build Status](https://jenkins.gongled.me/buildStatus/icon?job=vpn-bootstrap)](https://jenkins.gongled.me/job/vpn-bootstrap)
 
-vpn-bootstrap helps you setup IPSec/L2TP server.
+Ansible roles which helps you setup IPSec/L2TP VPN on Digital Ocean droplet.
 
 ## Quick install
 
-Log in to your server as superuser (root) via SSH and execute this command:
+Log in to your server as root via SSH and execute this command:
 
     curl -sL https://raw.githubusercontent.com/gongled/vpn-bootstrap/master/bin/vpn-bootstrap | bash -s -- username
 
@@ -14,7 +14,7 @@ Done. It works.
 
 ## Manual install
 
-Log in to your server as superuser (root) via SSH and execute this command:
+Log in to your server as root via SSH and execute this command:
 
     curl -sL https://raw.githubusercontent.com/gongled/vpn-bootstrap/master/bin/vpn-preconf | bash -s
 
