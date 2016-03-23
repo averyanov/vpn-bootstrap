@@ -36,4 +36,4 @@ Run:
 
 ## License
 
-MIT License
+MIT
