@@ -1,7 +1,7 @@
 ---
 
 - name: Install VPN
-  sudo: true
+  become: sudo
   hosts: all
   roles:
     - common
