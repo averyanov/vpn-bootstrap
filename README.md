@@ -1,5 +1,7 @@
 ## About
 
+[![Build Status](https://jenkins.gongled.me/buildStatus/icon?job=vpn-bootstrap)](https://jenkins.gongled.me/job/vpn-bootstrap)
+
 vpn-bootstrap helps you setup IPSec/L2TP server.
 
 ## Quick install
