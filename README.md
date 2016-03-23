@@ -19,8 +19,8 @@ Ansible roles which helps you setup IPSec/L2TP VPN on [Digital Ocean](https://di
 
 ## Supported devices
 
-* Windows 7/8/8.1/10
-* Ubuntu 14.04+.
+* Windows 7+
+* Ubuntu 14.04+
 * Mac OS 10.9+
 * iOS 8.0+
 * Android 4.0+
