@@ -102,6 +102,7 @@ prepare() {
 
   if ! checkDeps $DEPS ; then
     show "Install $DEPS packages before this script usage" $RED
+    exit 1
   fi
 }
 
