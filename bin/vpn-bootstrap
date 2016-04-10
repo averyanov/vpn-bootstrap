@@ -3,15 +3,16 @@
 ################################################################################
 #
 # Author:   Gleb E. Goncharov <inbox@gongled.ru>
-# Version:  1.0
+# Version:  1.1
 # License:  MIT
 #
 ################################################################################
 
-PROJECT_AUTO_USERNAME=$1
 PROJECT_NAME="vpn-bootstrap"
 PROJECT_PATH="/var/tmp/$PROJECT_NAME"
 PROJECT_CONF_PATH="$PROJECT_PATH/config.json"
+
+DEPS="openssl ansible pwgen"
 
 ################################################################################
 
@@ -28,83 +29,109 @@ GREY=37
 
 ################################################################################
 
-show() {
-    if [[ -n "$2" && -z "$no_colors" ]] ; then
-        echo -e "\e[${2}m${1}\e[0m"
-    else
-        echo -e "$1"
-    fi
-}
-
-is_root() {
-    if [ "$(id -u)" != "0" ]; then
-        show "Error: this script must be run as root" $RED
-        exit 1
-    fi
-}
+SEPARATOR="\n*******************************************************************************\n"
 
 ################################################################################
 
 main() {
+  prepare
 
-    is_root
+  local username="$1"
 
-    if [ $# -eq 0 ]; then
-        show "Error: you must specify username" $RED
-        exit 1
-    fi
+  if [[ -z "$username" ]] ; then
+    username=$(pwgen -01AB 8)
+  fi
 
-    ############################################################################
+  ############################################################################
 
-    rm -rf "$PROJECT_PATH/" &> /dev/null
+  rm -rf "$PROJECT_PATH/" &> /dev/null
 
-    curl -sL https://raw.githubusercontent.com/gongled/vpn-bootstrap/master/bin/vpn-preconf | bash -s
+  curl -sL https://raw.githubusercontent.com/gongled/vpn-bootstrap/master/bin/vpn-preconf | bash -s
 
-    ############################################################################
+  ############################################################################
 
-    show "*******************************************************************************\n" $NORMAL
+  show "$SEPARATOR" $GREY
 
-    show "Generate credentials..." $GREY
+  show "Generate credentials..."
 
-    PROJECT_AUTO_PASSWORD=`mktemp -u XXXXXXXXXXXXXXXX`
-    PROJECT_AUTO_IPSECPSK=`openssl rand -hex 16`
-    PROJECT_AUTO_REMOTEIP=`curl -sL http://ip.gongled.me`
+  local password=$(pwgen -s1Bv 16)
+  local ipsecpsk=$(openssl rand -hex 16)
+  local public_ip=$(ifconfig eth0 | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}')
 
-    show "Patching config..." $GREY
+  show "Patching config..."
 
-    sed -i 's/%USERNAME%/'$PROJECT_AUTO_USERNAME'/g' "$PROJECT_CONF_PATH" &> /dev/null
-    sed -i 's/%PASSWORD%/'$PROJECT_AUTO_PASSWORD'/g' "$PROJECT_CONF_PATH" &> /dev/null
-    sed -i 's/%IPSECPSK%/'$PROJECT_AUTO_IPSECPSK'/g' "$PROJECT_CONF_PATH" &> /dev/null
-    sed -i 's/%REMOTEIP%/'$PROJECT_AUTO_REMOTEIP'/g' "$PROJECT_CONF_PATH" &> /dev/null
+  sed -i 's/%USERNAME%/'$username'/g'        "$PROJECT_CONF_PATH" &> /dev/null
+  sed -i 's/%PASSWORD%/'$local $password'/g' "$PROJECT_CONF_PATH" &> /dev/null
+  sed -i 's/%IPSECPSK%/'$ipsecpsk'/g'        "$PROJECT_CONF_PATH" &> /dev/null
+  sed -i 's/%REMOTEIP%/'$public_ip'/g'       "$PROJECT_CONF_PATH" &> /dev/null
 
-    pushd "$PROJECT_PATH" &> /dev/null
+  pushd "$PROJECT_PATH" &> /dev/null
 
-    ############################################################################
+  ############################################################################
 
-    show "Running ansible..." $GREY
+  show "Running ansible..."
 
-    show "\n*******************************************************************************" $NORMAL
+  show "$SEPARATOR" $GREY
 
-    ansible-playbook install.yml -c local -e @"$PROJECT_CONF_PATH"
+  ansible-playbook install.yml -c local -e @"$PROJECT_CONF_PATH"
 
-    show "\n*******************************************************************************\n" $NORMAL
+  show "$SEPARATOR" $GREY
 
-    show "Installation has been completed." $GREEN
+  show "Installation has been completed!" $GREEN
 
-    show "\n*******************************************************************************\n" $NORMAL
+  show "$SEPARATOR" $GREY
 
-    ############################################################################
+  ############################################################################
 
-    show "Protocol ....................... IPSec/L2TP" $GREY
-    show "IP address ..................... $PROJECT_AUTO_REMOTEIP" $GREY
+  show "Protocol ....................... IPSec/L2TP"
+  show "IP address ..................... $public_ip"
 
-    show "Username ....................... $PROJECT_AUTO_USERNAME" $GREY
-    show "Password ....................... $PROJECT_AUTO_PASSWORD" $GREY
-    show "IPSec pre-shared key ........... $PROJECT_AUTO_IPSECPSK" $GREY
+  show "Username ....................... $username"
+  show "Password ....................... $password"
+  show "IPSec pre-shared key ........... $ipsecpsk"
 
-    show "\n*******************************************************************************\n" $NORMAL
+  show "$SEPARATOR" $GREY
 
-    popd &> /dev/null
+  popd &> /dev/null
+}
+
+prepare() {
+  if ! isRoot ; then
+    exit 1
+  fi
+
+  if ! checkDeps $DEPS ; then
+    show "Install $DEPS packages before this script usage" $RED
+    exit 1
+  fi
+}
+
+################################################################################
+
+show() {
+  if [[ -n "$2" && -z "$no_colors" ]] ; then
+    echo -e "\e[${2}m${1}\e[0m"
+  else
+    echo -e "$1"
+  fi
+}
+
+isRoot() {
+  if [[ "$(id -u)" != "0" ]] ; then
+    show "Error: this script must be run as root" $RED
+    return 1
+  fi
+
+  return 0
+}
+
+checkDeps () {
+  for app in $@ ; do
+    type -P $app &> /dev/null
+    [[ $? -eq 1 ]] && return 1
+  done
+
+  return 0
 }
 
 ################################################################################
