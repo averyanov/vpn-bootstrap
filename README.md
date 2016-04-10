@@ -1,6 +1,7 @@
 ## About
 
 [![Build Status](https://jenkins.gongled.me/buildStatus/icon?job=vpn-bootstrap)](https://jenkins.gongled.me/job/vpn-bootstrap)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/gongled/vpn-bootstrap/blob/master/LICENSE)
 
 Ansible roles which helps you setup IPSec/L2TP VPN on [Digital Ocean](https://digitalocean.com) droplet.
 
@@ -61,4 +62,4 @@ Run:
 
 ## License
 
-MIT
+[MIT](https://github.com/gongled/vpn-bootstrap/blob/master/LICENSE)
